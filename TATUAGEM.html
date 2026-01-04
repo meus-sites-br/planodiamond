@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INK NOIR | Tattoo Studio</title>
+    
+    <!-- Fontes: Oswald (Títulos) e Roboto (Corpo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Ícones e Animações -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. VARIÁVEIS & RESET (CRIMSON DARK)
+           ========================================= */
+        :root {
+            /* Paleta Crimson Noir */
+            --primary: #ff2e2e;       /* Vermelho Sangue / Neon */
+            --primary-dark: #cc0000;  /* Vermelho Escuro */
+            --primary-dim: rgba(255, 46, 46, 0.1);
+            
+            --bg-deep: #050505;       /* Preto Absoluto */
+            --bg-panel: #0f0f0f;      /* Cinza Carbono */
+            --bg-card: #141414;       /* Cinza Card */
+            
+            --text-main: #f0f0f0;     /* Branco Suave */
+            --text-muted: #888888;    /* Cinza Texto */
+            
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-accent: rgba(255, 46, 46, 0.4); 
+            
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Roboto', sans-serif;
+            
+            --sidebar-width: 280px;
+            --radius-sm: 0px; /* Cantos retos (Industrial) */
+            
+            --shadow-glow: 0 0 20px rgba(255, 46, 46, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        
+        body {
+            width: 100%; max-width: 100%; overflow-x: hidden;
+            background-color: var(--bg-deep); 
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.6;
+        }
+
+        /* Textura Noise de Fundo */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: -1;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        img { width: 100%; display: block; object-fit: cover; }
+        ul { list-style: none; }
+        button { font-family: var(--font-title); cursor: pointer; letter-spacing: 1px; }
+
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 30px; position: relative; }
+
+        /* =========================================
+           2. COMPONENTES
+           ========================================= */
+        /* Botão Primário (Solid Red) */
+        .btn-crimson {
+            padding: 16px 45px; 
+            background: var(--primary);
+            color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            border: none; cursor: pointer; transition: all 0.3s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 5px 20px rgba(255, 46, 46, 0.3);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .btn-crimson:hover { 
+            background: #fff; color: #000; 
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Botão Outline */
+        .btn-outline {
+            padding: 14px 38px; background: transparent; 
+            border: 1px solid rgba(255,255,255,0.2); color: #fff;
+            font-weight: 500; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* =========================================
+           3. LAYOUT & SIDEBAR (Desktop)
+           ========================================= */
+        @media (min-width: 1024px) {
+            body { padding-left: var(--sidebar-width); }
+            .mobile-header, .mobile-dock, .mobile-menu-overlay { display: none; }
+        }
+
+        .sidebar {
+            background: var(--bg-panel);
+            width: var(--sidebar-width);
+            height: 100vh; position: fixed; top: 0; left: 0;
+            overflow-y: auto; z-index: 100;
+            padding: 40px 30px; display: flex; flex-direction: column; justify-content: space-between;
+            border-right: 1px solid var(--border-subtle);
+        }
+        /* Scrollbar */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--bg-deep); }
+        .sidebar::-webkit-scrollbar-thumb { background: #333; }
+
+        .brand { 
+            font-family: var(--font-title); font-size: 2.5rem; font-weight: 700; line-height: 1; 
+            color: #fff; letter-spacing: -1px; text-transform: uppercase;
+        }
+        .brand span { color: var(--primary); }
+        .brand small { 
+            display: block; font-family: var(--font-body); font-size: 0.6rem; 
+            letter-spacing: 4px; color: #666; margin-top: 5px; font-weight: 400;
+        }
+
+        .nav-list { display: flex; flex-direction: column; gap: 8px; }
+        .nav-link { 
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 10px; color: var(--text-nav); 
+            transition: 0.3s; font-size: 0.95rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;
+            border-left: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: rgba(255,255,255,0.03); color: #fff; 
+            border-left-color: var(--primary); padding-left: 20px;
+        }
+        .nav-link i { font-size: 1.3rem; color: var(--primary); }
+
+        .sidebar-footer { border-top: 1px solid var(--border-subtle); padding-top: 25px; }
+        .socials-side { display: flex; gap: 15px; }
+        .socials-side a { 
+            width: 35px; height: 35px; background: rgba(255,255,255,0.05); 
+            display: flex; align-items: center; justify-content: center; color: #ccc; transition:0.3s; 
+            clip-path: polygon(20% 0%, 100% 0, 100% 80%, 80% 100%, 0 100%, 0% 20%);
+        }
+        .socials-side a:hover { background: var(--primary); color: #fff; transform: translateY(-3px); }
+
+        /* =========================================
+           4. SEÇÕES
+           ========================================= */
+        section { padding: 120px 0; border-bottom: 1px solid var(--border-subtle); }
+        
+        .section-header { margin-bottom: 70px; max-width: 800px; position: relative; border-left: 4px solid var(--primary); padding-left: 30px; }
+        .section-subtitle { color: var(--primary); text-transform: uppercase; letter-spacing: 4px; font-weight: 700; font-size: 0.85rem; display: block; margin-bottom: 10px; }
+        .section-title { font-family: var(--font-title); font-size: 3.5rem; color: #fff; line-height: 1; text-transform: uppercase; }
+
+        /* HERO */
+        #hero {
+            height: 100vh; display: flex; align-items: center; position: relative; padding: 0;
+            background: url('https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat fixed;
+        }
+        #hero::before {
+            content: ''; position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(90deg, #050505 0%, rgba(5,5,5,0.9) 50%, rgba(255, 46, 46, 0.1) 100%);
+        }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; padding-left: 60px; }
+        .hero-tag { 
+            background: rgba(255, 46, 46, 0.1); color: var(--primary); padding: 8px 16px; border: 1px solid var(--primary);
+            font-size: 0.8rem; text-transform: uppercase; font-weight: 700; display: inline-block; 
+            margin-bottom: 30px; letter-spacing: 3px;
+        }
+        .hero-title { font-family: var(--font-title); font-size: 5rem; line-height: 0.95; margin-bottom: 30px; color: #fff; text-transform: uppercase; }
+        .hero-title span { color: var(--primary); -webkit-text-stroke: 1px var(--primary); color: transparent; }
+        .hero-desc { font-size: 1.2rem; color: #ccc; margin-bottom: 50px; line-height: 1.6; max-width: 500px; font-weight: 300; }
+
+        /* ABOUT */
+        #about { background: var(--bg-panel); }
+        .about-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 100px; align-items: center; }
+        .about-img-wrap { position: relative; border: 1px solid #333; padding: 10px; }
+        .about-img-wrap img { width: 100%; height: 600px; object-fit: cover; filter: grayscale(100%) contrast(1.2); transition: 0.5s; }
+        .about-img-wrap:hover img { filter: grayscale(0%); }
+        
+        /* Badges Flutuantes */
+        .badges-container { 
+            position: absolute; bottom: -30px; right: -30px; 
+            display: flex; gap: 15px; z-index: 10;
+        }
+        .xp-badge {
+            padding: 25px 20px; background: #000; border: 1px solid #333;
+            min-width: 120px; text-align: center; display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: 0.3s;
+        }
+        .xp-badge:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .xp-number { font-size: 2.2rem; font-weight: 700; display: block; line-height: 1; font-family: var(--font-title); margin-bottom: 5px; color: var(--primary); }
+        .xp-text { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #888; }
+
+        .about-text p { color: #aaa; line-height: 1.8; margin-bottom: 25px; font-size: 1.05rem; text-align: justify; }
+
+        /* SERVICES */
+        #services { background: var(--bg-deep); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .service-card {
+            background: var(--bg-panel); padding: 40px 30px; 
+            border: 1px solid #222; transition: 0.4s; cursor: pointer; position: relative;
+            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+        }
+        .service-card:hover { transform: translateY(-5px); border-color: var(--primary); background: #1a1a1a; }
+        .svc-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 25px; transition: 0.4s; }
+        .svc-title { font-family: var(--font-title); font-size: 1.8rem; margin-bottom: 15px; color: #fff; text-transform: uppercase; }
+        .svc-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
+        .svc-link { color: var(--primary); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .service-card:hover .svc-link { gap: 15px; color: #fff; }
+
+        /* TEAM */
+        #team { background: var(--bg-panel); }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
+        .team-card { position: relative; overflow: hidden; cursor: pointer; border: 1px solid #222; }
+        .team-img-wrap { position: relative; height: 450px; overflow: hidden; }
+        .team-img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; filter: grayscale(100%); }
+        .team-card:hover .team-img { transform: scale(1.05); filter: grayscale(0%); }
+        
+        .team-social {
+            position: absolute; bottom: -70px; left: 0; width: 100%; padding: 15px;
+            background: rgba(0,0,0,0.9); display: flex; justify-content: center; gap: 20px;
+            transition: 0.4s ease-in-out; backdrop-filter: blur(5px); z-index: 2; border-top: 1px solid var(--primary);
+        }
+        .team-img-wrap:hover .team-social { bottom: 0; }
+        .team-social a { color: #fff; font-size: 1.4rem; transition: 0.2s; }
+        .team-social a:hover { color: var(--primary); }
+        .team-info { padding: 20px; text-align: center; background: #0e0e0e; border-top: 1px solid #222; }
+        .team-name { font-family: var(--font-title); font-size: 1.5rem; color: #fff; margin-bottom: 5px; text-transform: uppercase; }
+        .team-role { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* GALLERY */
+        #gallery { background: var(--bg-deep); padding: 0; }
+        .gallery-header { padding: 120px 80px; text-align: center; border-bottom: 1px solid #222; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #222; }
+        .g-item { position: relative; height: 350px; overflow: hidden; display: block; background: #000; }
+        .g-item img { width: 100%; height: 100%; transition: 0.6s; object-fit: cover; filter: grayscale(100%) contrast(1.1); opacity: 0.7; }
+        .g-item:hover img { transform: scale(1.1); filter: grayscale(0%); opacity: 1; }
+        .g-item:nth-child(1) { grid-column: span 2; grid-row: span 2; height: 701px; }
+        .g-overlay {
+            position: absolute; inset: 0; background: rgba(255, 46, 46, 0.85); /* Vermelho */
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.4s; backdrop-filter: blur(2px);
+        }
+        .g-item:hover .g-overlay { opacity: 1; }
+        .g-overlay i { color: #fff; font-size: 3rem; }
+
+        /* REVIEWS */
+        #reviews { background: var(--bg-panel); }
+        .reviews-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .review-card { padding: 40px; border: 1px solid #333; background: #151515; position: relative; }
+        .review-card::before { content: '“'; position: absolute; top: 20px; left: 20px; font-family: var(--font-title); font-size: 6rem; color: rgba(255,255,255,0.05); line-height: 0; }
+        .review-quote { font-style: italic; color: #ccc; margin-bottom: 30px; font-family: var(--font-body); font-size: 1.1rem; line-height: 1.6; }
+        .review-author { display: flex; align-items: center; gap: 15px; }
+        .author-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; filter: grayscale(100%); border: 1px solid var(--primary); }
+        .author-info h5 { font-weight: 400; color: #fff; letter-spacing: 1px; text-transform: uppercase; font-size: 0.9rem; }
+
+        footer { padding: 100px 0; background: #000; color: #666; text-align: center; border-top: 1px solid #222; }
+
+        /* =========================================
+           5. ELEMENTOS MÓVEIS & OVERRIDES (PRIORIDADE)
+           ========================================= */
+        .mobile-header { display: none; }
+        .mobile-dock { display: none; }
+        .mobile-menu-overlay { 
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transform: translateX(100%); 
+            transition: transform 0.4s ease, visibility 0.4s;
+            visibility: hidden; pointer-events: none;
+        }
+        .mobile-menu-overlay.active { transform: translateX(0); visibility: visible; pointer-events: auto; }
+        .mobile-links { display: flex; flex-direction: column; gap: 35px; text-align: center; }
+        .mobile-links a { font-family: var(--font-title); font-size: 2.5rem; color: #fff; opacity: 0.8; transition: 0.3s; text-transform: uppercase; letter-spacing: 2px; }
+        .mobile-links a:hover { opacity: 1; color: var(--primary); }
+        .close-mobile { position: absolute; top: 25px; right: 25px; color: #fff; font-size: 2rem; cursor: pointer; }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .container { padding: 0 25px; }
+            
+            /* Ajuste Padding Footer */
+            footer { padding-bottom: 120px; }
+
+            /* Header Mobile */
+            .mobile-header {
+                display: flex; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+                background: #000; padding: 15px 20px; align-items: center; justify-content: space-between; 
+                border-bottom: 1px solid #222;
+            }
+            .mobile-brand { font-family: var(--font-title); font-size: 1.5rem; color: #fff; font-weight: 700; letter-spacing: 1px; }
+            .mobile-brand span { color: var(--primary); }
+            .mobile-menu-trigger { font-size: 1.8rem; color: #fff; cursor: pointer; }
+            
+            /* Dock Mobile */
+            .mobile-dock { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                background: #080808; z-index: 9990; justify-content: space-around; 
+                padding: 12px 10px 25px 10px; border-top: 1px solid #222;
+            }
+            .dock-item { color: #666; display: flex; flex-direction: column; align-items: center; font-size: 0.6rem; gap: 4px; text-transform: uppercase; font-weight: 600; text-decoration: none; font-family: var(--font-body); }
+            .dock-item i { font-size: 1.4rem; }
+            .dock-item.active { color: var(--primary); }
+            
+            /* Ajustes Gerais */
+            section { padding: 80px 0; }
+            .hero-title { font-size: 3rem; }
+            #hero { padding-top: 100px; padding-bottom: 60px; text-align: center; justify-content: center; background-attachment: scroll; }
+            .hero-content { padding-left: 0; }
+            .btn-crimson, .btn-outline { width: 100%; text-align: center; justify-content: center; }
+            
+            .about-grid { grid-template-columns: 1fr; gap: 60px; }
+            .about-img-wrap img { height: 400px; }
+            
+            /* Badges Mobile - Blocos Separados */
+            .badges-container { 
+                position: static; margin-top: 20px; margin-bottom: 40px; 
+                width: 100%; justify-content: space-between; flex-direction: row; 
+                gap: 10px; right: auto; bottom: auto; border: none;
+            }
+            .xp-badge { flex: 1; padding: 15px 5px; min-width: auto; background: #0a0a0a; border: 1px solid #333; }
+            .xp-number { font-size: 1.8rem; }
+            .xp-text { font-size: 0.5rem; letter-spacing: 1px; }
+
+            .services-grid { grid-template-columns: 1fr; }
+            .gallery-header { padding: 60px 20px; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; gap: 2px; }
+            .g-item { height: 150px !important; }
+            .g-item:nth-child(1) { grid-column: span 1; grid-row: span 1; height: 150px; }
+            .reviews-wrapper { grid-template-columns: 1fr; }
+            
+            /* FIX 1: Notificações Mobile - No Topo e Visíveis */
+            .notify-stack { 
+                top: 100px; /* Abaixo do header */
+                bottom: auto; 
+                left: 5%; 
+                right: 5%;
+                width: auto; 
+                max-width: none;
+                transform: none; /* Reset transform desktop */
+                z-index: 11000; 
+                pointer-events: none;
+            }
+            .notify-card { 
+                width: 100%; transform: translateY(-20px); opacity: 0;
+                background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+                border: 1px solid #333; pointer-events: auto;
+                margin: 0 auto;
+            }
+            .notify-card.active { transform: translateY(0); opacity: 1; }
+            
+            /* FIX 2: Chat acima do Dock */
+            .chat-btn { 
+                bottom: 110px !important; 
+                right: 25px !important; 
+                width: 55px; height: 55px; 
+            }
+            .chat-window { 
+                bottom: 0; right: 0; width: 100%; height: 85vh; 
+                border-radius: 20px 20px 0 0; z-index: 10002; 
+            }
+        }
+
+        /* =========================================
+           6. MODAL, CHAT (Desktop & Comum)
+           ========================================= */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            backdrop-filter: blur(5px); z-index: 10001; 
+            display: none; justify-content: center; align-items: center; padding: 20px; 
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .booking-modal { background: #111; width: 100%; max-width: 450px; padding: 40px; border: 1px solid #333; position: relative; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #fff; }
+        .field { width: 100%; padding: 14px; border: 1px solid #333; background: #050505; color: #fff; margin-bottom: 20px; display: block; font-family: var(--font-body); }
+        .field:focus { border-color: var(--primary); }
+        .label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .chat-btn { 
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; 
+            background: var(--primary); border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-size: 30px; color: #fff; cursor: pointer; 
+            z-index: 2500; box-shadow: 0 0 20px rgba(255, 46, 46, 0.4); transition: 0.3s; 
+        }
+        .chat-btn:hover { transform: scale(1.1); }
+        .chat-window { 
+            position: fixed; bottom: 120px; right: 40px; width: 340px; height: 500px; 
+            background: #111; border-radius: 12px; display: none; flex-direction: column; 
+            overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); z-index: 2500; 
+            border: 1px solid #333; 
+        }
+        .chat-window.open { display: flex; animation: slideUp 0.3s; }
+        .chat-header { padding: 15px 20px; background: #000; color: #fff; border-bottom: 1px solid var(--primary); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-title); font-style: italic; letter-spacing: 1px; }
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; background: #0f0f0f; }
+        .chat-footer { padding: 10px; border-top: 1px solid #333; display: flex; flex-wrap: wrap; gap: 5px; background: #000; }
+        .quick-reply { background: transparent; border: 1px solid #444; color: #aaa; padding: 8px 12px; font-size: 0.7rem; cursor: pointer; flex-grow: 1; text-align: center; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .quick-reply:hover { border-color: var(--primary); color: var(--primary); }
+        
+        .msg { padding: 12px 18px; font-size: 0.9rem; max-width: 85%; border-radius: 4px; margin-bottom: 10px; }
+        .msg.bot { background: #1a1a1a; color: #ccc; border: 1px solid #333; }
+        .msg.user { background: var(--primary); color: #fff; align-self: flex-end; }
+
+        /* Notify Desktop */
+        .notify-stack { position: fixed; bottom: 30px; left: 30px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .notify-card { 
+            background: #111; border-left: 4px solid var(--primary); padding: 15px; 
+            display: flex; align-items: center; gap: 15px; width: 300px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateX(-150%); 
+            transition: 0.5s; border-radius: 4px; pointer-events: auto; 
+        }
+        .notify-card.active { transform: translateX(0); }
+        .notify-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; filter: grayscale(100%); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="notify-stack" id="notifyStack"></div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-brand">INK <span>NOIR</span></div>
+        <div class="mobile-menu-trigger" onclick="toggleMenu()"><i class="ph ph-list"></i></div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <i class="ph ph-x close-mobile" onclick="toggleMenu()"></i>
+        <div class="mobile-links">
+            <a href="#hero" onclick="toggleMenu()">Início</a>
+            <a href="#about" onclick="toggleMenu()">O Estúdio</a>
+            <a href="#services" onclick="toggleMenu()">Sessões</a>
+            <a href="#team" onclick="toggleMenu()">Artistas</a>
+            <a href="#gallery" onclick="toggleMenu()">Portfólio</a>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">INK<br><span>NOIR</span><small>CRIMSON ART</small></div>
+        <nav class="nav-list">
+            <a href="#hero" class="nav-link active"><i class="ph ph-house"></i> Início</a>
+            <a href="#about" class="nav-link"><i class="ph ph-paint-brush"></i> O Estúdio</a>
+            <a href="#services" class="nav-link"><i class="ph ph-lightning"></i> Sessões</a>
+            <a href="#team" class="nav-link"><i class="ph ph-users"></i> Artistas</a>
+            <a href="#gallery" class="nav-link"><i class="ph ph-image-square"></i> Portfólio</a>
+            <a href="#reviews" class="nav-link"><i class="ph ph-star"></i> Reviews</a>
+            <a href="#contact" class="nav-link"><i class="ph ph-envelope"></i> Contato</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="socials-side">
+                <a href="#"><i class="ph ph-instagram-logo"></i></a>
+                <a href="#"><i class="ph ph-tiktok-logo"></i></a>
+                <a href="#"><i class="ph ph-whatsapp-logo"></i></a>
+            </div>
+            <p style="margin-top:20px; font-size:0.6rem; color:#666; text-transform:uppercase; letter-spacing:2px;">© 2025 Ink Noir.</p>
+        </div>
+    </aside>
+
+    <main>
+        <!-- Hero -->
+        <section id="hero">
+            <div class="container">
+                <div class="hero-content" data-aos="fade-up">
+                    <span class="hero-tag">Private Tattoo Studio</span>
+                    <h1 class="hero-title">Arte Eterna em <br><span style="color:var(--primary);">Pele e Sangue.</span></h1>
+                    <p class="hero-desc" data-aos="fade-up" data-aos-delay="100">Estúdio privado focado em Blackwork, Realismo e projetos exclusivos. Atendimento apenas com hora marcada para quem busca o extraordinário.</p>
+                    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:flex-start;" data-aos="fade-up" data-aos-delay="200">
+                        <button class="btn-crimson" onclick="openModal('Orçamento VIP')">Orçamento Rápido</button>
+                        <a href="#gallery" class="btn-outline">Ver Trabalhos</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About -->
+        <section id="about">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-img-wrap" data-aos="fade-right">
+                        <div class="about-img">
+                            <img src="https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?q=80&w=1974&auto=format&fit=crop" alt="Tattoo Artist">
+                        </div>
+                        <div class="badges-container">
+                            <div class="xp-badge">
+                                <span class="xp-number">10+</span><span class="xp-text">Anos de<br>Agulha</span>
+                            </div>
+                            <div class="xp-badge">
+                                <span class="xp-number">2k+</span><span class="xp-text">Projetos<br>Entregues</span>
+                            </div>
+                            <div class="xp-badge">
+                                <span class="xp-number">20</span><span class="xp-text">Prêmios<br>Globais</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-text" data-aos="fade-left">
+                        <div class="section-header">
+                            <span class="section-subtitle">O Artista</span>
+                            <h2 class="section-title">Traço Autoral</h2>
+                        </div>
+                        <p>O Ink Noir não é um estúdio de rua comum. Somos um coletivo de artistas dedicados a criar obras de arte que duram para sempre. Aqui, não fazemos cópias. Cada projeto é único e desenhado para o corpo do cliente.</p>
+                        <p>Utilizamos materiais 100% descartáveis e veganos, garantindo segurança máxima e cicatrização perfeita.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services -->
+        <section id="services">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Investimento</span>
+                    <h2 class="section-title">Sessões & Projetos</h2>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card" onclick="openModal('Flash Day')" data-aos="fade-up">
+                        <div class="svc-icon"><i class="ph ph-lightning"></i></div>
+                        <h4 class="svc-title">Flash Day VIP</h4>
+                        <p class="svc-desc">Artes autorais pré-definidas (até 15cm). Execução rápida e precisa.</p>
+                        <span class="svc-link">Reservar <i class="ph-bold ph-arrow-right"></i></span>
+                    </div>
+                    <div class="service-card" onclick="openModal('Sessão Fechada')" data-aos="fade-up" data-aos-delay="100">
+                        <div class="svc-icon"><i class="ph ph-skull"></i></div>
+                        <h4 class="svc-title">Sessão Fechada</h4>
+                        <p class="svc-desc">Projeto 100% personalizado. Criação da arte + 6 horas de agulha.</p>
+                        <span class="svc-link">Reservar <i class="ph-bold ph-arrow-right"></i></span>
+                    </div>
+                    <div class="service-card" onclick="openModal('Fechamento')" data-aos="fade-up" data-aos-delay="200">
+                        <div class="svc-icon"><i class="ph ph-infinity"></i></div>
+                        <h4 class="svc-title">Fechamento</h4>
+                        <p class="svc-desc">Braço, Costas ou Perna completa. Pacote com múltiplas sessões mensais.</p>
+                        <span class="svc-link">Orçar <i class="ph-bold ph-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team -->
+        <section id="team">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Guest Spot</span>
+                    <h2 class="section-title">Artistas Residentes</h2>
+                </div>
+                <div class="team-grid">
+                    <div class="team-card" data-aos="fade-up">
+                        <div class="team-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500" class="team-img">
+                            <div class="team-social">
+                                <a href="https://instagram.com" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+                            </div>
+                        </div>
+                        <div class="team-info"><h4 class="team-name">Marcos "Raven"</h4><span class="team-role">Blackwork</span></div>
+                    </div>
+                    <div class="team-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="team-img-wrap">
+                            <img src="img/tato.jpg" class="team-img">
+                            <div class="team-social">
+                                <a href="https://instagram.com" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+                            </div>
+                        </div>
+                        <div class="team-info"><h4 class="team-name">Sofia Ink</h4><span class="team-role">Fine Line</span></div>
+                    </div>
+                    <div class="team-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="team-img-wrap">
+                            <img src="https://images.unsplash.com/photo-1542596594-649edbc13630?w=500" class="team-img">
+                            <div class="team-social">
+                                <a href="https://instagram.com" target="_blank"><i class="ph-fill ph-instagram-logo"></i></a>
+                            </div>
+                        </div>
+                        <div class="team-info"><h4 class="team-name">Leo "Viper"</h4><span class="team-role">Realismo</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery -->
+        <section id="gallery" style="padding:0;">
+            <div class="gallery-header" style="padding:100px 40px; text-align:center; border-bottom:1px solid #222;">
+                <span class="section-subtitle" style="justify-content:center;">Portfolio</span>
+                <h2 class="section-title">Selected Ink</h2>
+            </div>
+            <div class="gallery-grid">
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="https://images.unsplash.com/photo-1542596594-649edbc13630?w=500"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/tato.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/tatto.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/piercing.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/tatuagem1.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/fineline.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="img/realismo.jpg"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+                <a href="https://instagram.com" target="_blank" class="g-item"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500"><div class="g-overlay"><i class="ph-thin ph-instagram-logo"></i></div></a>
+            </div>
+        </section>
+
+        <!-- Reviews -->
+        <section id="reviews" style="background:#111;">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-subtitle">Feedback</span>
+                    <h2 class="section-title">Clientes Reais</h2>
+                </div>
+                <div class="reviews-wrapper">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-quote">"O traço do Marcos é absurdo. Minha tattoo cicatrizou em 5 dias. Estúdio impecável."</p>
+                        <div class="review-author">
+                            <img src="https://randomuser.me/api/portraits/men/44.jpg" class="author-img">
+                            <div class="author-info"><h5>Bruno Silva</h5></div>
+                        </div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="review-quote">"Fiz minha primeira tattoo com a Sofia e me senti super segura. O resultado ficou lindo."</p>
+                        <div class="review-author">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" class="author-img">
+                            <div class="author-info"><h5>Camila Dias</h5></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div style="font-family: var(--font-title); font-size: 2rem; color: #fff; margin-bottom: 20px;">INK NOIR</div>
+                <p>Rua Augusta, 1500 - SP | (11) 99999-9999</p>
+                <p style="opacity:0.5; margin-top:20px; font-size: 0.75rem;">&copy; 2025 Ink Noir Studio.</p>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Mobile Dock -->
+    <div class="mobile-dock">
+        <a href="#hero" class="dock-item"><i class="ph ph-house-line"></i><span>Início</span></a>
+        <a href="#services" class="dock-item"><i class="ph ph-lightning"></i><span>Sessões</span></a>
+        <a href="https://wa.me/5500000000000" class="dock-item"><i class="ph-fill ph-whatsapp-logo" style="color:var(--primary); font-size:2.2rem; margin-top:-10px;"></i></a>
+        <a href="#gallery" class="dock-item"><i class="ph ph-image-square"></i><span>Fotos</span></a>
+        <a href="#team" class="dock-item"><i class="ph ph-users"></i><span>Equipe</span></a>
+    </div>
+
+    <!-- Chat & Modal -->
+    <div class="chat-btn" onclick="toggleChat()"><i class="ph-fill ph-chat-teardrop-dots"></i></div>
+
+    <div class="modal-overlay" id="bookingModal">
+        <div class="booking-modal">
+            <i class="ph ph-x close-modal" onclick="closeModal()"></i>
+            <h3 style="margin-bottom:20px; color:#fff; font-family:var(--font-title);">Orçamento</h3>
+            <div class="input-group">
+                <label class="label">Nome</label>
+                <input type="text" id="modalName" class="field" placeholder="Seu nome">
+            </div>
+            <div class="input-group">
+                <label class="label">Ideia/Tamanho</label>
+                <input type="text" id="modalService" class="field" readonly style="background:#222; color:#fff;">
+            </div>
+            <div class="input-group">
+                <label class="label">Data Prevista</label>
+                <input type="date" id="modalDate" class="field" style="color-scheme: dark;">
+            </div>
+            <button class="btn-crimson" style="width:100%; border-radius:0;" onclick="sendWhatsApp()">Enviar no Zap</button>
+        </div>
+    </div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header"><span>Concierge Ink</span><i class="ph ph-x" onclick="toggleChat()" style="cursor:pointer;"></i></div>
+        <div class="chat-body" id="chatBody"><div class="msg bot">Salve! Quer orçar uma tattoo nova?</div></div>
+        <div class="chat-footer" id="chatOptions"></div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+
+        const modal = document.getElementById('bookingModal');
+        const svcInput = document.getElementById('modalService');
+        const nameInput = document.getElementById('modalName');
+        const dateInput = document.getElementById('modalDate');
+
+        function openModal(service) {
+            svcInput.value = service;
+            modal.classList.add('active');
+        }
+        function closeModal() { modal.classList.remove('active'); }
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        function sendWhatsApp() {
+            if(!nameInput.value) return alert('Digite seu nome');
+            window.open(`https://wa.me/5500000000000?text=Olá, sou ${nameInput.value} e quero orçar: ${svcInput.value}`, '_blank');
+            closeModal();
+        }
+
+        // Chat
+        const chatBody = document.getElementById('chatBody');
+        const chatOpts = document.getElementById('chatOptions');
+        const opts = [{l:"📅 Agendar"}, {l:"📍 Local"}, {l:"💰 Preços"}];
+        
+        function toggleChat() { document.getElementById('chatWindow').classList.toggle('open'); }
+
+        opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-reply';
+            btn.innerText = o.l;
+            btn.onclick = () => {
+                chatBody.innerHTML += `<div class="msg user">${o.l}</div>`;
+                setTimeout(() => chatBody.innerHTML += `<div class="msg bot">Um momento...</div>`, 500);
+            }
+            chatOpts.appendChild(btn);
+        });
+
+        // Notify
+        const nStack = document.getElementById('notifyStack');
+        function notify() {
+            const div = document.createElement('div');
+            div.className = 'notify-card';
+            div.innerHTML = `<img src="https://randomuser.me/api/portraits/women/${Math.floor(Math.random()*50)}.jpg" class="notify-img"><div><p style="font-weight:700;font-size:0.8rem;color:#fff;">Nova Cliente</p><p style="font-size:0.7rem;color:var(--primary);">Agendou Sessão</p></div>`;
+            nStack.appendChild(div);
+            setTimeout(()=>div.classList.add('active'), 100);
+            setTimeout(()=>{ div.classList.remove('active'); setTimeout(()=>div.remove(), 500); }, 5000);
+        }
+        setInterval(notify, 12000);
+    </script>
+</body>
+</html>
